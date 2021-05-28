@@ -22,7 +22,7 @@ req = comm.irecv(source=0,tag=11)
 etalons = req.wait()
 
 points = []
-for n in range(3):
+for n in range(100):
     x = random.uniform(-5,5)
     y = random.uniform(-5,5)
 
