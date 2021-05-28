@@ -22,7 +22,7 @@ req = comm.irecv(source=0,tag=11)
 etalons = req.wait()
 
 points = []
-for n in range(100):
+for n in range(500):
     x = random.uniform(-5,5)
     y = random.uniform(-5,5)
 
@@ -41,9 +41,13 @@ for n in range(100):
 #at this point i want to gather all the points so i can plot them
 unclassified = comm.gather(points, root=0)
 if rank==0:
-    print("please plot unclassified points")
     unclassified_points = [item for sublist in unclassified for item in sublist]
-    #TO-DO plot me
+
+    plt.scatter([i[0] for i in unclassified_points], [i[1] for i in unclassified_points])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Unclassified')
+    plt.savefig('unclassified.png')
 
 #each processor recalculates the distances between each point and etalon
 for i, point in enumerate(points):
@@ -57,6 +61,13 @@ for i, point in enumerate(points):
 #now i want to gather all classified points and plot them
 classified = comm.gather(points, root=0)
 if rank==0:
-    print("please plot classified points and save the graph")
     classified_points = [item for sublist in classified for item in sublist]
-    #TO-DO plot me
+
+    plt.clf()
+    for g in np.unique([i[2] for i in classified_points]):
+        plt.scatter(np.array([i[0] for i in classified_points if i[2]==g]), np.array([i[1] for i in classified_points if i[2]==g]), label=g)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Classified')
+    plt.legend()
+    plt.savefig('classified.png')
